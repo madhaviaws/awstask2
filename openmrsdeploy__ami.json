@@ -1,0 +1,170 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Exercise-1: Launch configuation",
+    "Parameters": {
+        "keyvaluepair": {
+            "Description": "Key value pair",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "securitygroup": {
+            "Description": "Security group name",
+            "Type": "String",
+            "Default": "sg-028462503f290f699"
+        },
+        "aminame": {
+            "Description": "AMI name",
+            "Type": "String",
+            "Default": "ami-0afae94bf6d61eb46"
+        },
+        "LBname": {
+            "Description": "LB name",
+            "Type": "String"
+        },
+        "Subnetname": {
+            "Description": "Subnet name",
+            "Type": "String"
+        },
+        "Subnetname1": {
+            "Description": "Subnet1 name",
+            "Type": "String"
+        },
+        "Vpcname": {
+            "Description": "VPC name",
+            "Type": "String",
+            "Default": "vpc-a6422fde"
+        },
+        "Mytargetname": {
+            "Description": "Target name",
+            "Type": "String"
+        },
+        "MyASGname": {
+            "Description": "ASG name",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "myLaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "KeyName": {
+                    "Ref": "keyvaluepair"
+                },
+                "ImageId": {
+                    "Ref": "aminame"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "securitygroup"
+                    }
+                ],
+                "InstanceType": "t2.micro"
+            }
+        },
+        "Loadbalancing": {
+            "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "Properties": {
+                "IpAddressType": "ipv4",
+                "Name": {
+                    "Ref": "LBname"
+                },
+                "Scheme": "internet-facing",
+                "SecurityGroups": [
+                    {
+                        "Ref": "securitygroup"
+                    }
+                ],
+                "Subnets": [
+                    {
+                        "Ref": "Subnetname"
+                    },
+                    {
+                        "Ref": "Subnetname1"
+                    }
+                ],
+                "Type": "application"
+            }
+        },
+        "Loadbalancetarget": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties": {
+                "HealthCheckIntervalSeconds": 30,
+                "HealthCheckPath": "/",
+                "HealthCheckPort": "traffic-port",
+                "HealthCheckProtocol": "HTTP",
+                "HealthCheckTimeoutSeconds": 5,
+                "HealthyThresholdCount": 5,
+                "Name": {
+                    "Ref": "Mytargetname"
+                },
+                "Port": 8080,
+                "Protocol": "HTTP",
+                "TargetType": "instance",
+                "UnhealthyThresholdCount": 2,
+                "VpcId": {
+                    "Ref": "Vpcname"
+                }
+            }
+        },
+        "Loadbalncelistener": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "DefaultActions": [
+                    {
+                        "ForwardConfig": {
+                            "TargetGroups": [
+                                {
+                                    "TargetGroupArn": {
+                                        "Ref": "Loadbalancetarget"
+                                    }
+                                }
+                            ]
+                        },
+                        "Type": "forward"
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "Loadbalancing"
+                },
+                "Port": 80,
+                "Protocol": "HTTP"
+            }
+        },
+        "myASG": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "AutoScalingGroupName": {
+                    "Ref": "MyASGname"
+                },
+                "LaunchConfigurationName": {
+                    "Ref": "myLaunchConfig"
+                },
+                "MinSize": 1,
+                "MaxSize": 3,
+                "DesiredCapacity": 1,
+                "HealthCheckGracePeriod": 300,
+                "TargetGroupARNs": [
+                    {
+                        "Ref": "Loadbalancetarget"
+                    }
+                ],
+                "VPCZoneIdentifier": [
+                    {
+                        "Ref": "Subnetname"
+                    }
+                ]
+            }
+        },
+        "ASGScalingPolicyHigh": {
+            "Type": "AWS::AutoScaling::ScalingPolicy",
+            "Properties": {
+                "AdjustmentType": "ChangeInCapacity",
+                "PolicyType": "SimpleScaling",
+                "Cooldown": "300",
+                "AutoScalingGroupName": {
+                    "Ref": "myASG"
+                },
+                "ScalingAdjustment": 1
+            }
+        }
+    }
+}
