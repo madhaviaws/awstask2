@@ -1,0 +1,16 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Exercise-1: Auto Scaling policy",
+    "Resources": {
+        "ASGScalingPolicyHigh": {
+            "Type": "AWS::AutoScaling::ScalingPolicy",
+            "Properties": {
+                "AdjustmentType": "ChangeInCapacity",
+                "PolicyType": "SimpleScaling",
+                "Cooldown": "300",
+                "AutoScalingGroupName": "myASG",
+                "ScalingAdjustment": 1
+            }
+        }
+    }
+}

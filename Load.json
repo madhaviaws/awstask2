@@ -1,0 +1,22 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Exercise-1: Load Balancer",
+    "Resources": {
+        "Loadbalancing": {
+            "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "Properties": {
+                "IpAddressType": "ipv4",
+                "Name": "myload",
+                "Scheme": "internet-facing",
+                "SecurityGroups": [
+                    "sg-028462503f290f699"
+                ],
+                "Subnets": [
+                    "subnet-94b2aadf",
+                    "subnet-bd8b75c5"
+                ],
+                "Type": "application"
+            }
+        }
+    }
+}

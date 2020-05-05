@@ -1,0 +1,29 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Exercise-1: Launch configuation",
+    "Parameters": {
+        "keyvaluepair": {
+            "Description": "Key value pair",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "securitygroup": {
+            "Description": "Security group name",
+            "Type": "AWS::EC2::SecurityGroup::GroupName"
+        }
+    },
+    "Resources": {
+        "myLaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "KeyName": {
+                    "Ref": "keyvaluepair"
+                },
+                "ImageId": "ami-065718c7a0dc2e0a7",
+                "SecurityGroups": [
+                    "sg-028462503f290f699"
+                ],
+                "InstanceType": "t2.micro"
+            }
+        }
+    }
+}

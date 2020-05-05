@@ -1,0 +1,26 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Exercise-1: Load Balancer Listener",
+    "Resources": {
+        "Loadbalncelistener": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "DefaultActions": [
+                    {
+                        "ForwardConfig": {
+                            "TargetGroups": [
+                                {
+                                    "TargetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:640778435434:targetgroup/mytarget/340afafeb01632fc"
+                                }
+                            ]
+                        },
+                        "Type": "forward"
+                    }
+                ],
+                "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:640778435434:loadbalancer/app/myload/9be622a7739b141e",
+                "Port": 80,
+                "Protocol": "HTTP"
+            }
+        }
+    }
+}

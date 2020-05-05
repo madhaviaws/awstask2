@@ -1,0 +1,23 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Exercise-1: Auto Scaling group",
+    "Resources": {
+        "myASG": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "AutoScalingGroupName": "myASG",
+                "LaunchConfigurationName": "launch-myLaunchConfig-IPT42X7NDCIH",
+                "MinSize": 1,
+                "MaxSize": 3,
+                "DesiredCapacity": 1,
+                "HealthCheckGracePeriod": 300,
+                "TargetGroupARNs": [
+                    "arn:aws:elasticloadbalancing:us-west-2:640778435434:targetgroup/mytarget/340afafeb01632fc"
+                ],
+                "VPCZoneIdentifier": [
+                    "subnet-94b2aadf"
+                ]
+            }
+        }
+    }
+}
